@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 25, 2026 at 05:11 PM
+-- Generation Time: Oct 26, 2026 at 09:05 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -41,8 +41,16 @@ CREATE TABLE `sinhvien` (
 --
 
 INSERT INTO `sinhvien` (`ma_sv`, `ho_ten`, `ngay_sinh`, `so_dien_thoai`, `lop`, `email`) VALUES
-('123', 'Lò Văn Ly', '2000-02-01', '03137485491', 'k60sn1', 'maile@gmail.com'),
-('24D192020', 'Nguyễn Thành Hưng', '2006-07-07', '0969300877', 'K60SN1', 'hung772006@gmail.com');
+('SV000001', 'Nguyễn Văn An', '2006-12-06', '0912345678', 'K58A1', 'an.nguyen@gmail.com'),
+('SV000002', 'Trần Thị Bình', '2005-09-03', '0923456789', 'K58A2', 'binh.tran@gmail.com'),
+('SV000003', 'Lê Văn Cường', '2006-11-13', '0934567890', 'K58A1', 'cuong.le@gmail.com'),
+('SV000004', 'Phạm Thị Dung', '2006-02-21', '0945678901', 'K58A3', 'dung.pham@gmail.com'),
+('SV000005', 'Hoàng Văn Đức', '2006-05-22', '0956789012', 'K58A2', 'duc.hoang@gmail.com'),
+('SV000006', 'Vũ Thị Hà', '2005-08-14', '0967890123', 'K58A1', 'ha.vu@gmail.com'),
+('SV000007', 'Đặng Văn Hùng', '2006-07-28', '0978901234', 'K58A3', 'hung.dang@gmail.com'),
+('SV000008', 'Bùi Thị Lan', '2006-04-18', '0989012345', 'K58A2', 'lan.bui@gmail.com'),
+('SV000009', 'Đỗ Văn Minh', '2006-02-12', '0990123456', 'K58A1', 'minh.do@gmail.com'),
+('SV000010', 'Ngô Thị Ngọc', '2006-05-28', '0901234567', 'K58A3', 'ngoc.ngo@gmail.com');
 
 --
 -- Indexes for dumped tables
