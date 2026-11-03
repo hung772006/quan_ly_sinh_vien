@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors['ho_ten'] = "Họ tên phải từ 2–50 ký tự, không chứa chữ số";
     }
 
-    // Validate Ngày sinh (chuẩn định dạng yyyy-mm-dd)
+    // Validate Ngày sinh
     if (empty($ngay_sinh)) {
         $errors['ngay_sinh'] = "Ngày sinh phải đúng định dạng yyyy-mm-dd";
     } elseif (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $ngay_sinh)) {
@@ -101,45 +101,60 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <?php include 'header.php'; ?>
 
 <div class="row justify-content-center">
-    <div class="col-md-8 bg-white p-4 rounded shadow-sm">
-        <h3 class="mb-4 text-center">Thêm hồ sơ sinh viên</h3>
-        <?= $message ?>
-        <form method="POST" action="" id="formAddStudent">
-            <div class="mb-3">
-                <label class="form-label">Mã sinh viên</label>
-                <input type="text" id="ma_sv" name="ma_sv" class="form-control <?= isset($errors['ma_sv']) ? 'is-invalid' : '' ?>" placeholder="VD: SV000011" value="<?= htmlspecialchars($_POST['ma_sv'] ?? '') ?>">
-                <?php if(isset($errors['ma_sv'])): ?><div id="err_ma_sv" class="invalid-feedback"><?= $errors['ma_sv'] ?></div><?php endif; ?>
+    <div class="col-lg-8">
+        <div class="card-modern">
+            <div class="form-header-banner d-flex align-items-center gap-3">
+                <div class="bg-white bg-opacity-25 rounded-3 p-2 fs-3 d-flex align-items-center justify-content-center">
+                    <i class="bi bi-person-plus-fill"></i>
+                </div>
+                <div>
+                    <h3 class="mb-0 fw-bold fs-4">Thêm hồ sơ sinh viên</h3>
+                    <div class="small opacity-75">Nhập đầy đủ thông tin sinh viên theo đúng quy định của hệ thống</div>
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Họ và tên</label>
-                <input type="text" id="ho_ten" name="ho_ten" class="form-control <?= isset($errors['ho_ten']) ? 'is-invalid' : '' ?>" value="<?= htmlspecialchars($_POST['ho_ten'] ?? '') ?>">
-                <?php if(isset($errors['ho_ten'])): ?><div id="err_ho_ten" class="invalid-feedback"><?= $errors['ho_ten'] ?></div><?php endif; ?>
+            <div class="p-4 p-md-5">
+                <?= $message ?>
+                <form method="POST" action="" id="formAddStudent">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="bi bi-upc-scan me-1 text-primary"></i>Mã sinh viên</label>
+                            <input type="text" id="ma_sv" name="ma_sv" class="form-control <?= isset($errors['ma_sv']) ? 'is-invalid' : '' ?>" placeholder="VD: SV000011" value="<?= htmlspecialchars($_POST['ma_sv'] ?? '') ?>">
+                            <?php if(isset($errors['ma_sv'])): ?><div id="err_ma_sv" class="invalid-feedback"><?= $errors['ma_sv'] ?></div><?php endif; ?>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="bi bi-person-badge me-1 text-primary"></i>Họ và tên</label>
+                            <input type="text" id="ho_ten" name="ho_ten" class="form-control <?= isset($errors['ho_ten']) ? 'is-invalid' : '' ?>" placeholder="VD: Nguyễn Văn A" value="<?= htmlspecialchars($_POST['ho_ten'] ?? '') ?>">
+                            <?php if(isset($errors['ho_ten'])): ?><div id="err_ho_ten" class="invalid-feedback"><?= $errors['ho_ten'] ?></div><?php endif; ?>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="bi bi-calendar-event me-1 text-primary"></i>Ngày sinh (yyyy-mm-dd)</label>
+                            <input type="text" id="ngay_sinh" name="ngay_sinh" placeholder="yyyy-mm-dd" class="form-control <?= isset($errors['ngay_sinh']) ? 'is-invalid' : '' ?>" value="<?= htmlspecialchars($_POST['ngay_sinh'] ?? '') ?>">
+                            <?php if(isset($errors['ngay_sinh'])): ?><div id="err_ngay_sinh" class="invalid-feedback"><?= $errors['ngay_sinh'] ?></div><?php endif; ?>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="bi bi-building me-1 text-primary"></i>Lớp</label>
+                            <input type="text" id="lop" name="lop" class="form-control <?= isset($errors['lop']) ? 'is-invalid' : '' ?>" placeholder="VD: K58A1" value="<?= htmlspecialchars($_POST['lop'] ?? '') ?>">
+                            <?php if(isset($errors['lop'])): ?><div id="err_lop" class="invalid-feedback"><?= $errors['lop'] ?></div><?php endif; ?>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="bi bi-telephone me-1 text-primary"></i>Số điện thoại</label>
+                            <input type="text" id="so_dien_thoai" name="so_dien_thoai" class="form-control <?= isset($errors['so_dien_thoai']) ? 'is-invalid' : '' ?>" placeholder="Gồm 10 chữ số, bắt đầu bằng 0" value="<?= htmlspecialchars($_POST['so_dien_thoai'] ?? '') ?>">
+                            <?php if(isset($errors['so_dien_thoai'])): ?><div id="err_so_dien_thoai" class="invalid-feedback"><?= $errors['so_dien_thoai'] ?></div><?php endif; ?>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="bi bi-envelope-at me-1 text-primary"></i>Email</label>
+                            <input type="text" id="email" name="email" class="form-control <?= isset($errors['email']) ? 'is-invalid' : '' ?>" placeholder="ten@mien.duoi" value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
+                            <?php if(isset($errors['email'])): ?><div id="err_email" class="invalid-feedback"><?= $errors['email'] ?></div><?php endif; ?>
+                        </div>
+                    </div>
+                    <hr class="my-4 text-muted opacity-25">
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="index.php" id="btnHuy" class="btn btn-secondary px-4">Hủy</a>
+                        <button type="submit" id="btnThem" class="btn btn-primary px-4">Thêm</button>
+                    </div>
+                </form>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Ngày sinh (yyyy-mm-dd)</label>
-                <input type="text" id="ngay_sinh" name="ngay_sinh" placeholder="yyyy-mm-dd" class="form-control <?= isset($errors['ngay_sinh']) ? 'is-invalid' : '' ?>" value="<?= htmlspecialchars($_POST['ngay_sinh'] ?? '') ?>">
-                <?php if(isset($errors['ngay_sinh'])): ?><div id="err_ngay_sinh" class="invalid-feedback"><?= $errors['ngay_sinh'] ?></div><?php endif; ?>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Lớp</label>
-                <input type="text" id="lop" name="lop" class="form-control <?= isset($errors['lop']) ? 'is-invalid' : '' ?>" value="<?= htmlspecialchars($_POST['lop'] ?? '') ?>">
-                <?php if(isset($errors['lop'])): ?><div id="err_lop" class="invalid-feedback"><?= $errors['lop'] ?></div><?php endif; ?>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Số điện thoại</label>
-                <input type="text" id="so_dien_thoai" name="so_dien_thoai" class="form-control <?= isset($errors['so_dien_thoai']) ? 'is-invalid' : '' ?>" value="<?= htmlspecialchars($_POST['so_dien_thoai'] ?? '') ?>">
-                <?php if(isset($errors['so_dien_thoai'])): ?><div id="err_so_dien_thoai" class="invalid-feedback"><?= $errors['so_dien_thoai'] ?></div><?php endif; ?>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input type="text" id="email" name="email" class="form-control <?= isset($errors['email']) ? 'is-invalid' : '' ?>" value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
-                <?php if(isset($errors['email'])): ?><div id="err_email" class="invalid-feedback"><?= $errors['email'] ?></div><?php endif; ?>
-            </div>
-            <div class="text-center mt-4">
-                <button type="submit" id="btnThem" class="btn btn-primary px-4">Thêm</button>
-                <a href="index.php" id="btnHuy" class="btn btn-secondary px-4">Hủy</a>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 <?php include 'footer.php'; ?>

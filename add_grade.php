@@ -4,7 +4,6 @@ require_once 'db.php';
 $message = '';
 $errors = [];
 
-// Hàm kiểm tra điểm hợp lệ (số từ 0 đến 10, tối đa 1 chữ số thập phân)
 function validateScore($score_str, $field_label) {
     if ($score_str === '') {
         return "$field_label không được để trống";
@@ -45,13 +44,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // 2. Validate Mã môn học (3 chữ cái in hoa + 3 chữ số, VD: INT101)
+    // 2. Validate Mã môn học
     if (empty($ma_mh)) {
         $errors['ma_mh'] = "Mã môn học không được để trống";
     } elseif (!preg_match('/^[A-Z]{3}\d{3}$/', $ma_mh)) {
         $errors['ma_mh'] = "Mã môn học phải gồm 3 chữ cái in hoa và 3 chữ số (ví dụ INT101)";
     } elseif ($sv_exists) {
-        // Kiểm tra trùng cặp (Mã SV, Mã môn học)
         $stmt_dup = $pdo->prepare("SELECT COUNT(*) FROM diem WHERE ma_sv = :ma_sv AND ma_mh = :ma_mh");
         $stmt_dup->execute(['ma_sv' => $ma_sv, 'ma_mh' => $ma_mh]);
         if ($stmt_dup->fetchColumn() > 0) {
@@ -71,7 +69,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors['diem_cuoi_ky'] = $err_ck;
     }
 
-    // 5. Validate Hạn khóa điểm (yyyy-mm-dd, >= ngày hiện tại)
+    // 5. Validate Hạn khóa điểm
     if (empty($han_khoa_diem)) {
         $errors['han_khoa_diem'] = "Hạn khóa điểm không được để trống";
     } elseif (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $han_khoa_diem)) {
@@ -88,7 +86,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // 6. Nếu hợp lệ, tự tính Điểm tổng kết và lưu vào CSDL
     if (empty($errors)) {
         $gk = (float)$diem_giua_ky;
         $ck = (float)$diem_cuoi_ky;
@@ -121,41 +118,80 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <?php include 'header.php'; ?>
 
 <div class="row justify-content-center">
-    <div class="col-md-8 bg-white p-4 rounded shadow-sm">
-        <h3 class="mb-4 text-center">Thêm điểm sinh viên</h3>
-        <?= $message ?>
-        <form method="POST" action="" id="formAddGrade">
-            <div class="mb-3">
-                <label class="form-label">Mã sinh viên</label>
-                <input type="text" id="ma_sv" name="ma_sv" class="form-control <?= isset($errors['ma_sv']) ? 'is-invalid' : '' ?>" placeholder="VD: SV000001" value="<?= htmlspecialchars($_POST['ma_sv'] ?? '') ?>">
-                <?php if(isset($errors['ma_sv'])): ?><div id="err_ma_sv" class="invalid-feedback"><?= $errors['ma_sv'] ?></div><?php endif; ?>
+    <div class="col-lg-8">
+        <div class="card-modern">
+            <div class="form-header-banner d-flex align-items-center gap-3">
+                <div class="bg-white bg-opacity-25 rounded-3 p-2 fs-3 d-flex align-items-center justify-content-center">
+                    <i class="bi bi-file-earmark-plus-fill"></i>
+                </div>
+                <div>
+                    <h3 class="mb-0 fw-bold fs-4">Thêm điểm sinh viên</h3>
+                    <div class="small opacity-75">Nhập điểm học phần mới (Hệ thống tự động tính điểm tổng kết)</div>
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Mã môn học</label>
-                <input type="text" id="ma_mh" name="ma_mh" class="form-control <?= isset($errors['ma_mh']) ? 'is-invalid' : '' ?>" placeholder="VD: INT101" value="<?= htmlspecialchars($_POST['ma_mh'] ?? '') ?>">
-                <?php if(isset($errors['ma_mh'])): ?><div id="err_ma_mh" class="invalid-feedback"><?= $errors['ma_mh'] ?></div><?php endif; ?>
+            <div class="p-4 p-md-5">
+                <?= $message ?>
+                <form method="POST" action="" id="formAddGrade">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="bi bi-upc-scan me-1 text-primary"></i>Mã sinh viên</label>
+                            <input type="text" id="ma_sv" name="ma_sv" class="form-control <?= isset($errors['ma_sv']) ? 'is-invalid' : '' ?>" placeholder="VD: SV000001" value="<?= htmlspecialchars($_POST['ma_sv'] ?? '') ?>">
+                            <?php if(isset($errors['ma_sv'])): ?><div id="err_ma_sv" class="invalid-feedback"><?= $errors['ma_sv'] ?></div><?php endif; ?>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="bi bi-book me-1 text-primary"></i>Mã môn học</label>
+                            <input type="text" id="ma_mh" name="ma_mh" class="form-control <?= isset($errors['ma_mh']) ? 'is-invalid' : '' ?>" placeholder="VD: INT101" value="<?= htmlspecialchars($_POST['ma_mh'] ?? '') ?>">
+                            <?php if(isset($errors['ma_mh'])): ?><div id="err_ma_mh" class="invalid-feedback"><?= $errors['ma_mh'] ?></div><?php endif; ?>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label"><i class="bi bi-123 me-1 text-primary"></i>Điểm giữa kỳ (30%)</label>
+                            <input type="text" id="diem_giua_ky" name="diem_giua_ky" class="form-control <?= isset($errors['diem_giua_ky']) ? 'is-invalid' : '' ?>" placeholder="0.0 - 10.0" value="<?= htmlspecialchars($_POST['diem_giua_ky'] ?? '') ?>">
+                            <?php if(isset($errors['diem_giua_ky'])): ?><div id="err_diem_giua_ky" class="invalid-feedback"><?= $errors['diem_giua_ky'] ?></div><?php endif; ?>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label"><i class="bi bi-123 me-1 text-primary"></i>Điểm cuối kỳ (70%)</label>
+                            <input type="text" id="diem_cuoi_ky" name="diem_cuoi_ky" class="form-control <?= isset($errors['diem_cuoi_ky']) ? 'is-invalid' : '' ?>" placeholder="0.0 - 10.0" value="<?= htmlspecialchars($_POST['diem_cuoi_ky'] ?? '') ?>">
+                            <?php if(isset($errors['diem_cuoi_ky'])): ?><div id="err_diem_cuoi_ky" class="invalid-feedback"><?= $errors['diem_cuoi_ky'] ?></div><?php endif; ?>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label"><i class="bi bi-calculator me-1 text-secondary"></i>Điểm tổng kết (Dự kiến)</label>
+                            <input type="text" id="preview_tong_ket" class="form-control bg-light fw-bold text-primary" value="--" disabled>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label"><i class="bi bi-calendar-lock me-1 text-primary"></i>Hạn khóa điểm (yyyy-mm-dd)</label>
+                            <input type="text" id="han_khoa_diem" name="han_khoa_diem" class="form-control <?= isset($errors['han_khoa_diem']) ? 'is-invalid' : '' ?>" placeholder="yyyy-mm-dd" value="<?= htmlspecialchars($_POST['han_khoa_diem'] ?? '') ?>">
+                            <?php if(isset($errors['han_khoa_diem'])): ?><div id="err_han_khoa_diem" class="invalid-feedback"><?= $errors['han_khoa_diem'] ?></div><?php endif; ?>
+                        </div>
+                    </div>
+                    <hr class="my-4 text-muted opacity-25">
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="grades.php" id="btnHuyDiem" class="btn btn-secondary px-4">Hủy</a>
+                        <button type="submit" id="btnThemDiem" class="btn btn-primary px-4">Thêm</button>
+                    </div>
+                </form>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Điểm giữa kỳ</label>
-                <input type="text" id="diem_giua_ky" name="diem_giua_ky" class="form-control <?= isset($errors['diem_giua_ky']) ? 'is-invalid' : '' ?>" placeholder="0.0 - 10.0" value="<?= htmlspecialchars($_POST['diem_giua_ky'] ?? '') ?>">
-                <?php if(isset($errors['diem_giua_ky'])): ?><div id="err_diem_giua_ky" class="invalid-feedback"><?= $errors['diem_giua_ky'] ?></div><?php endif; ?>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Điểm cuối kỳ</label>
-                <input type="text" id="diem_cuoi_ky" name="diem_cuoi_ky" class="form-control <?= isset($errors['diem_cuoi_ky']) ? 'is-invalid' : '' ?>" placeholder="0.0 - 10.0" value="<?= htmlspecialchars($_POST['diem_cuoi_ky'] ?? '') ?>">
-                <?php if(isset($errors['diem_cuoi_ky'])): ?><div id="err_diem_cuoi_ky" class="invalid-feedback"><?= $errors['diem_cuoi_ky'] ?></div><?php endif; ?>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Hạn khóa điểm (yyyy-mm-dd)</label>
-                <input type="text" id="han_khoa_diem" name="han_khoa_diem" class="form-control <?= isset($errors['han_khoa_diem']) ? 'is-invalid' : '' ?>" placeholder="yyyy-mm-dd" value="<?= htmlspecialchars($_POST['han_khoa_diem'] ?? '') ?>">
-                <?php if(isset($errors['han_khoa_diem'])): ?><div id="err_han_khoa_diem" class="invalid-feedback"><?= $errors['han_khoa_diem'] ?></div><?php endif; ?>
-            </div>
-            <div class="text-center mt-4">
-                <button type="submit" id="btnThemDiem" class="btn btn-primary px-4">Thêm</button>
-                <a href="grades.php" id="btnHuyDiem" class="btn btn-secondary px-4">Hủy</a>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
+
+<script>
+// Tự động nhẩm Điểm tổng kết khi nhập trên giao diện
+const gkInput = document.getElementById('diem_giua_ky');
+const ckInput = document.getElementById('diem_cuoi_ky');
+const previewInput = document.getElementById('preview_tong_ket');
+
+function updatePreview() {
+    const gk = parseFloat(gkInput.value);
+    const ck = parseFloat(ckInput.value);
+    if (!isNaN(gk) && !isNaN(ck) && gk >= 0 && gk <= 10 && ck >= 0 && ck <= 10) {
+        previewInput.value = (Math.round((gk * 0.3 + ck * 0.7) * 10) / 10).toFixed(1);
+    } else {
+        previewInput.value = '--';
+    }
+}
+gkInput.addEventListener('input', updatePreview);
+ckInput.addEventListener('input', updatePreview);
+updatePreview();
+</script>
 
 <?php include 'footer.php'; ?>
