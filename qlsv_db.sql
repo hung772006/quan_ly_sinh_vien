@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 26, 2026 at 09:05 AM
+-- Generation Time: Nov 03, 2026 at 05:02 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,34 @@ SET time_zone = "+00:00";
 --
 -- Database: `qlsv_db`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `diem`
+--
+
+CREATE TABLE `diem` (
+  `ma_sv` varchar(20) NOT NULL,
+  `ma_mh` varchar(10) NOT NULL,
+  `diem_giua_ky` decimal(4,1) NOT NULL,
+  `diem_cuoi_ky` decimal(4,1) NOT NULL,
+  `diem_tong_ket` decimal(4,1) NOT NULL,
+  `han_khoa_diem` date NOT NULL,
+  `trang_thai` varchar(30) NOT NULL DEFAULT 'Chưa khóa'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `diem`
+--
+
+INSERT INTO `diem` (`ma_sv`, `ma_mh`, `diem_giua_ky`, `diem_cuoi_ky`, `diem_tong_ket`, `han_khoa_diem`, `trang_thai`) VALUES
+('SV000001', 'INT101', 8.0, 7.0, 7.3, '2026-06-30', 'Đã khóa'),
+('SV000001', 'MAT101', 6.0, 5.0, 5.3, '2026-12-31', 'Chưa khóa'),
+('SV000002', 'INT101', 9.0, 8.0, 8.3, '2026-06-30', 'Đã khóa'),
+('SV000003', 'INT101', 5.0, 6.0, 5.7, '2026-06-30', 'Đã khóa'),
+('SV000004', 'INT101', 7.0, 9.0, 8.4, '2026-06-30', 'Đã khóa'),
+('SV000005', 'MAT101', 4.0, 6.0, 5.4, '2026-12-31', 'Chưa khóa');
 
 -- --------------------------------------------------------
 
@@ -57,10 +85,26 @@ INSERT INTO `sinhvien` (`ma_sv`, `ho_ten`, `ngay_sinh`, `so_dien_thoai`, `lop`, 
 --
 
 --
+-- Indexes for table `diem`
+--
+ALTER TABLE `diem`
+  ADD PRIMARY KEY (`ma_sv`,`ma_mh`);
+
+--
 -- Indexes for table `sinhvien`
 --
 ALTER TABLE `sinhvien`
   ADD PRIMARY KEY (`ma_sv`);
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `diem`
+--
+ALTER TABLE `diem`
+  ADD CONSTRAINT `fk_diem_sinhvien` FOREIGN KEY (`ma_sv`) REFERENCES `sinhvien` (`ma_sv`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
