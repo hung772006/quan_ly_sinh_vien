@@ -7,10 +7,10 @@ $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $query = "SELECT * FROM sinhvien";
 $params = [];
 
-if (!empty($search)) {
-    $query .= " WHERE ma_sv LIKE :search_ma OR ho_ten LIKE :search_ten";
+if ($search !== '') {
+    $query .= " WHERE ma_sv LIKE :search_ma OR ho_ten LIKE :search_ten OR lop LIKE :search_lop";
     $params['search_ma'] = "%$search%";
-    $params['search_ten'] = "%$search%";
+    $params['search_ten'] = $params['search_lop'] = "%$search%";
 }
 
 $query .= " ORDER BY ma_sv ASC";
@@ -74,7 +74,7 @@ $total_lop = $pdo->query("SELECT COUNT(DISTINCT lop) FROM sinhvien")->fetchColum
 <?php if(isset($_SESSION['msg'])): ?>
     <div id="msgAlert" class="alert alert-info d-flex align-items-center shadow-sm border-0 rounded-3">
         <i class="bi bi-info-circle-fill me-2 fs-5"></i>
-        <div><?= $_SESSION['msg']; unset($_SESSION['msg']); ?></div>
+        <div><?= htmlspecialchars($_SESSION['msg']); unset($_SESSION['msg']); ?></div>
     </div>
 <?php endif; ?>
 
@@ -86,12 +86,12 @@ $total_lop = $pdo->query("SELECT COUNT(DISTINCT lop) FROM sinhvien")->fetchColum
                 <span class="input-group-text bg-white border-end-0 text-muted">
                     <i class="bi bi-search"></i>
                 </span>
-                <input type="text" id="search" name="search" class="form-control border-start-0 ps-0" placeholder="Nhập Mã SV hoặc Họ tên để tìm kiếm..." value="<?= htmlspecialchars($search) ?>">
+                <input type="text" id="search" name="search" class="form-control border-start-0 ps-0" placeholder="Nhập Mã SV, Họ tên hoặc Lớp để tìm kiếm..." value="<?= htmlspecialchars($search) ?>">
             </div>
         </div>
         <div class="col-md-3 d-flex gap-2">
             <button type="submit" id="btnTimKiem" class="btn btn-primary w-100">Tìm kiếm</button>
-            <?php if(!empty($search)): ?>
+            <?php if($search !== ''): ?>
                 <a href="index.php" class="btn btn-outline-secondary" title="Xóa bộ lọc"><i class="bi bi-arrow-counterclockwise"></i></a>
             <?php endif; ?>
         </div>
